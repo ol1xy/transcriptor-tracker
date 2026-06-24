@@ -1,0 +1,5 @@
+pydantic
+typer
+pytest 
+pytest-cov
+flake8

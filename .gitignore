@@ -1,0 +1,89 @@
+# ==========================================
+# Виртуальное окружение (VENV)
+# ==========================================
+venv/
+.venv/
+env/
+ENV/
+bin/
+lib/
+develop-eggs/
+downloads/
+eggs/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# ==========================================
+# Кэш Python и байткод
+# ==========================================
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+
+# ==========================================
+# Тестирование и отчеты о покрытии (Pytest)
+# ==========================================
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# ==========================================
+# Настройки IDE и редакторов кода
+# ==========================================
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+*~
+.elasticbeanstalk/
+
+# ==========================================
+# Системные файлы ОС (Windows, macOS)
+# ==========================================
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# ==========================================
+# Локальные конфигурации и логи (Секреты)
+# ==========================================
+.env
+*.log
+
+# ==========================================
+# Исключение пользовательских данных (data/)
+# Игнорируем любые файлы в папках данных,
+# но сохраняем отслеживание самих директорий через .gitkeep
+# ==========================================
+data/inbox/*
+!data/inbox/.gitkeep
+
+data/processing/*
+!data/processing/.gitkeep
+
+data/outbox/*
+!data/outbox/.gitkeep
+
+data/published/*
+!data/published/.gitkeep
+
+data/errors/*
+!data/errors/.gitkeep

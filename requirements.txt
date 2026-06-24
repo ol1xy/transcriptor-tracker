@@ -1,5 +1,5 @@
-pydantic,
-typer,
-pytest, 
-pytest-cov,
+pydantic
+typer
+pytest 
+pytest-cov
 flake8

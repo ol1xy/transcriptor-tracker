@@ -12,7 +12,7 @@ def test_whisper_local_adapter_success(mock_whisper_model):
     mock_segment = MagicMock()
     mock_segment.text = "Привет, это тестовый транскрипт"
 
-    mock_model_instance.transcribe.returm_value = ([mock_segment], None)
+    mock_model_instance.transcribe.return_value = ([mock_segment], None)
 
     adapter = WhisperLocalAdapter(model_size="tiny")
     result = adapter.transcribe("data/examples/sample_meeting.mp3")

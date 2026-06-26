@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 
 
 class EvidenceBuilder:
@@ -72,7 +72,7 @@ class EvidenceBuilder:
 
     def build_published(
         self, issue_url: str, actor_name: str, actor_email: str,
-        skills: list[str] = None
+        skills: Optional[List[str]] = None
     ) -> Dict[str, Any]:
         skills = skills or []
         ext_key = f"{self.platform_uri}/extensions/detected-patterns"

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from faster_whisper import WhisperModel
 
-class BasicTranscriberAdapter(ABC):
+class BaseTranscriberAdapter(ABC):
     """
     Abstract class (interface) for speech recognition systems.
     It defines a unified rule for all future transcribers.
@@ -11,7 +11,7 @@ class BasicTranscriberAdapter(ABC):
         pass
 
 
-class WhisperLocalAdapter(BasicTranscriberAdapter):
+class WhisperLocalAdapter(BaseTranscriberAdapter):
     """
     Local transcription adapter based on faster_whisper module.
     """

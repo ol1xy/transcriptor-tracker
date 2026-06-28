@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 class BaseTrackerAdapter(ABC):
     @abstractmethod
     def publish(self, job_id: str, content: str) -> str:
-        pass
+        pass  # pragma: no cover
 
 
 class MockTrackerAdapter(BaseTrackerAdapter):

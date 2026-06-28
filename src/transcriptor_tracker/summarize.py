@@ -2,6 +2,7 @@ import re
 from abc import ABC, abstractmethod
 from src.transcriptor_tracker.models import SummaryModel, ActionItem
 
+
 class BaseLLMAdapter(ABC):
     """
     Interface for work with LLM.
@@ -56,7 +57,8 @@ class TemplateLLMAdapter(BaseLLMAdapter):
                     task_text = re.sub(r"@\S+", "", task_text).strip()
 
                     is_smart = "[SMART]" in task_text or ("SMART") in task_text
-                    task_text = task_text.replace("[SMART]", "").replace("(SMART)", "").strip()
+                    task_text = task_text.replace("[SMART]",
+                                                   "").replace("(SMART)", "").strip()
 
                     next_actions.append(ActionItem(
                         task=task_text,
@@ -71,3 +73,4 @@ class TemplateLLMAdapter(BaseLLMAdapter):
             conflicts=conflicts,
             next_actions=next_actions
         )
+    

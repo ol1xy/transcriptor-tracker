@@ -1,4 +1,3 @@
-import pytest
 from src.transcriptor_tracker.summarize import TemplateLLMAdapter
 from src.transcriptor_tracker.models import SummaryModel
 
@@ -16,17 +15,20 @@ def test_template_llm_adapter_parsing():
     """
 
     adapter = TemplateLLMAdapter()
-    
+
     summary = adapter.summarize(mock_transcript)
 
     assert isinstance(summary, SummaryModel)
     assert summary.context == "Обсуждение архитектуры MVP и интеграции xAPI."
-    
+
     assert len(summary.decisions) == 2
     assert "Использовать паттерн Адаптер" in summary.decisions[0]
-    
-    assert summary.open_questions[0] == "Какой LRS-сервер использовать для тестов?"
-    assert summary.conflicts[0] == "Разногласия по поводу структуры папки logs."
+
+    expected_question = "Какой LRS-сервер использовать для тестов?"
+    assert summary.open_questions[0] == expected_question
+
+    expected_conflict = "Разногласия по поводу структуры папки logs."
+    assert summary.conflicts[0] == expected_conflict
     
     assert len(summary.next_actions) == 2
     

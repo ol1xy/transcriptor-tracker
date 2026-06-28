@@ -56,15 +56,15 @@ class TemplateLLMAdapter(BaseLLMAdapter):
                     assignee = assignee_match.group(1)
                     task_text = re.sub(r"@\S+", "", task_text).strip()
 
-                    is_smart = "[SMART]" in task_text or ("SMART") in task_text
-                    task_text = task_text.replace("[SMART]",
-                                                   "").replace("(SMART)", "").strip()
+                is_smart = "[SMART]" in task_text or ("SMART") in task_text
+                task_text = task_text.replace("[SMART]",
+                                                "").replace("(SMART)", "").strip()
 
-                    next_actions.append(ActionItem(
-                        task=task_text,
-                        assignee=assignee,
-                        is_smart=is_smart
-                    ))
+                next_actions.append(ActionItem(
+                    task=task_text,
+                    assignee=assignee,
+                    is_smart=is_smart
+                ))
 
         return SummaryModel(
             context=context,

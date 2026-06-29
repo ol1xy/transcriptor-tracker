@@ -12,6 +12,7 @@ def test_template_llm_adapter_parsing():
     Конфликт: Разногласия по поводу структуры папки logs.
     Задача: Написать Makefile @ol1xy [SMART]
     Задача: Проверить Pull Request напарника @fedor
+    Задача: Написать документацию проекта [SMART]
     """
 
     adapter = TemplateLLMAdapter()
@@ -30,7 +31,7 @@ def test_template_llm_adapter_parsing():
     expected_conflict = "Разногласия по поводу структуры папки logs."
     assert summary.conflicts[0] == expected_conflict
     
-    assert len(summary.next_actions) == 2
+    assert len(summary.next_actions) == 3
     
     task_1 = summary.next_actions[0]
     assert task_1.task == "Написать Makefile"
@@ -41,3 +42,8 @@ def test_template_llm_adapter_parsing():
     assert task_2.task == "Проверить Pull Request напарника"
     assert task_2.assignee == "fedor"
     assert task_2.is_smart is False
+
+    task_3 = summary.next_actions[2]
+    assert task_3.task == "Написать документацию проекта"
+    assert task_3.assignee is None
+    assert task_3.is_smart is True

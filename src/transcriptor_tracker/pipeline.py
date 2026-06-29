@@ -83,3 +83,47 @@ class PipelineEngine:
 
         return skills
     
+    def run(
+            self,
+            audio_path: str,
+            job_id: str,
+            actor_name: str,
+            actor_email: str
+    ) -> Dict[str, Any]:
+        """
+        Starts end-to-end processing of an audio file.
+
+        Returns:
+            Dict[str, Any]: Dictionary with paths to
+            created files and an xAPI event.
+        """
+        transcript_text = self.transcriber.transcribe(audio_path)
+
+        summary_model = self.summarizer.summarize(transcript_text)
+
+        markdown_content = self._format_to_markdown(summary_model)
+
+        published_path = self.tracker.publish(job_id, markdown_content)
+
+        detected_skills = self._extract_skills(summary_model)
+        xapi_statement = self.self_event = self.tracker_url = published_path
+
+        xapi_event = self.evidence_builder.build_published(
+            issue_url=published_path,
+            actor_name=actor_name,
+            actor_email=actor_email,
+            skills=detected_skills
+        )
+
+        job_dir = os.path.dirname(published_path)
+        xapi_path = os.path.join(job_dir, "evidence-event.json")
+        with open(xapi_path, "w", encoding="utf-8") as f:
+            json.dump(xapi_event, f, ensure_ascii=False, indent=2)
+
+        return {
+            "transcript": transcript_text,
+            "summary_model": summary_model,
+            "markdown_path": published_path,
+            "xapi_path": xapi_path,
+            "xapi_event": xapi_event
+        }

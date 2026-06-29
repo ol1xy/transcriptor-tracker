@@ -30,9 +30,9 @@ def test_template_llm_adapter_parsing():
 
     expected_conflict = "Разногласия по поводу структуры папки logs."
     assert summary.conflicts[0] == expected_conflict
-    
+
     assert len(summary.next_actions) == 3
-    
+
     task_1 = summary.next_actions[0]
     assert task_1.task == "Написать Makefile"
     assert task_1.assignee == "ol1xy"

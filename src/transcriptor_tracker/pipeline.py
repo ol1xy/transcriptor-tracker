@@ -65,3 +65,21 @@ class PipelineEngine:
             lines.append("")
 
         return "\n".join(lines)
+
+    def _extract_skills(self, summary: SummaryModel) -> List[str]:
+        """
+        Internal helper. 
+        Analyzes the summary and extracts a list of demonstrated skills
+        (for inclusion in an xAPI event).
+        """
+        skills = []
+
+        has_smart = any(item.is_smart for item in summary.next_actions)
+        if has_smart:
+            skills.append("smart-task-definition")
+
+        if summary.conflicts:
+            skills.append("conflict-resolution")
+
+        return skills
+    

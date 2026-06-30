@@ -82,7 +82,16 @@ class PipelineEngine:
             skills.append("conflict-resolution")
 
         return skills
-    
+
+    def analyze_audio(self, audio_path: str) -> SummaryModel:
+        """
+        1st step - analysis.
+        Transcribes audio and returns SummaryModel.
+        """
+        transcript_text = self.transcriber.transcribe(audio_path)
+        summary_model = self.summarizer.summarize(transcript_text)
+        return summary_model
+
     def run(
             self,
             audio_path: str,

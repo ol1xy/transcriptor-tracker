@@ -19,9 +19,8 @@ class PipelineEngine:
             transcriber: BaseTranscriberAdapter,
             summarizer: BaseLLMAdapter,
             tracker: BaseTrackerAdapter,
-            evidence_builder: EvidenceBuilder
-        ):
-        
+            evidence_builder: EvidenceBuilder):
+
         self.transcriber = transcriber
         self.summarizer = summarizer
         self.tracker = tracker
@@ -68,7 +67,7 @@ class PipelineEngine:
 
     def _extract_skills(self, summary: SummaryModel) -> List[str]:
         """
-        Internal helper. 
+        Internal helper.
         Analyzes the summary and extracts a list of demonstrated skills
         (for inclusion in an xAPI event).
         """
@@ -135,7 +134,7 @@ class PipelineEngine:
             actor_email: str
     ) -> Dict[str, Any]:
         """
-        End-to-end automatic launch 
+        End-to-end automatic launch
         for tests and backward compatibility.
         """
         transcript_text = self.transcriber.transcribe(audio_path)

@@ -16,10 +16,10 @@ def test_pipeline_engine_full_run(tmp_path):
     """
 
     summarizer = TemplateLLMAdapter()
-    
+
     test_base_dir = str(tmp_path / "published")
     tracker = MockTrackerAdapter(base_dir=test_base_dir)
-    
+
     evidence_builder = EvidenceBuilder()
 
     engine = PipelineEngine(
@@ -42,9 +42,10 @@ def test_pipeline_engine_full_run(tmp_path):
     event = result["xapi_event"]
     assert event["actor"]["name"] == "Ivan Ivanov"
     assert event["verb"]["display"]["ru-RU"] == "опубликовал"
-    
+
     ext_key = "https://example.edu/xapi/extensions/detected-patterns"
     assert "smart-task-definition" in event["result"]["extensions"][ext_key]
+
 
 def test_pipeline_engine_step_by_step(tmp_path):
 
@@ -66,7 +67,7 @@ def test_pipeline_engine_step_by_step(tmp_path):
     )
 
     summary = engine.analyze_audio("fake_audio.mp3")
-    
+
     assert isinstance(summary, SummaryModel)
     assert summary.context == "Интеграция."
 

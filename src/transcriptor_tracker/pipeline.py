@@ -19,9 +19,8 @@ class PipelineEngine:
             transcriber: BaseTranscriberAdapter,
             summarizer: BaseLLMAdapter,
             tracker: BaseTrackerAdapter,
-            evidence_builder: EvidenceBuilder
-        ):
-        
+            evidence_builder: EvidenceBuilder):
+
         self.transcriber = transcriber
         self.summarizer = summarizer
         self.tracker = tracker
@@ -68,7 +67,7 @@ class PipelineEngine:
 
     def _extract_skills(self, summary: SummaryModel) -> List[str]:
         """
-        Internal helper. 
+        Internal helper.
         Analyzes the summary and extracts a list of demonstrated skills
         (for inclusion in an xAPI event).
         """
@@ -82,25 +81,38 @@ class PipelineEngine:
             skills.append("conflict-resolution")
 
         return skills
-    
-    def run(
+
+    def analyze_audio(self, audio_path: str) -> SummaryModel:
+        """
+        Analysis.
+        Transcribes audio and returns SummaryModel.
+        """
+        if not os.path.exists(audio_path):
+            raise FileNotFoundError(
+                f"Аудиофайл не найден по указанному пути: {audio_path}"
+            )
+
+        try:
+            transcript_text = self.transcriber.transcribe(audio_path)
+        except Exception as e:
+            raise RuntimeError(
+                f"Сбой при распознавании аудиозаписи: {e}"
+            )
+
+        summary_model = self.summarizer.summarize(transcript_text)
+        return summary_model
+
+    def publish_summary(
             self,
-            audio_path: str,
+            summary_model: SummaryModel,
             job_id: str,
             actor_name: str,
             actor_email: str
-    ) -> Dict[str, Any]:
+    ) -> dict:
         """
-        Starts end-to-end processing of an audio file.
-
-        Returns:
-            Dict[str, Any]: Dictionary with paths to
-            created files and an xAPI event.
+        Publication.
+        Saves abstract and writes xAPI-event.
         """
-        transcript_text = self.transcriber.transcribe(audio_path)
-
-        summary_model = self.summarizer.summarize(transcript_text)
-
         markdown_content = self._format_to_markdown(summary_model)
 
         published_path = self.tracker.publish(job_id, markdown_content)
@@ -120,9 +132,31 @@ class PipelineEngine:
             json.dump(xapi_event, f, ensure_ascii=False, indent=2)
 
         return {
-            "transcript": transcript_text,
-            "summary_model": summary_model,
             "markdown_path": published_path,
             "xapi_path": xapi_path,
             "xapi_event": xapi_event
+        }
+
+    def run(
+            self,
+            audio_path: str,
+            job_id: str,
+            actor_name: str,
+            actor_email: str
+    ) -> Dict[str, Any]:
+        """
+        End-to-end automatic launch
+        for tests and backward compatibility.
+        """
+        transcript_text = self.transcriber.transcribe(audio_path)
+        summary_model = self.summarizer.summarize(transcript_text)
+
+        pub_result = self.publish_summary(
+            summary_model, job_id, actor_name, actor_email
+        )
+
+        return {
+            "transcript": transcript_text,
+            "summary_model": summary_model,
+            **pub_result
         }

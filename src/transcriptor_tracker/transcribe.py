@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from faster_whisper import WhisperModel
 
+
 class BaseTranscriberAdapter(ABC):
     """
     Abstract class (interface) for speech recognition systems.
@@ -19,9 +20,9 @@ class WhisperLocalAdapter(BaseTranscriberAdapter):
         self.model_size = model_size
 
     def transcribe(self, audio_path: str) -> str:
-        model = WhisperModel(self.model_size, device = "cpu",
-                             compute_type = "int8")
-        
+        model = WhisperModel(self.model_size, device="cpu",
+                             compute_type="int8")
+
         segments, info = model.transcribe(audio_path, beam_size=5)
 
         text_segments = []

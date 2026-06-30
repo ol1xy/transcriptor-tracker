@@ -1,5 +1,4 @@
 from unittest.mock import MagicMock, patch
-import pytest
 from src.transcriptor_tracker.transcribe import WhisperLocalAdapter
 
 
@@ -19,8 +18,8 @@ def test_whisper_local_adapter_success(mock_whisper_model):
 
     assert result == "Привет, это тестовый транскрипт"
 
-    mock_whisper_model.assert_called_once_with("tiny", device = "cpu",
-                                               compute_type = "int8")
-    
-    mock_model_instance.transcribe.assert_called_once_with("data/examples/sample_meeting.mp3",
-                                                           beam_size = 5)
+    mock_whisper_model.assert_called_once_with("tiny", device="cpu",
+                                               compute_type="int8")
+
+    mock_model_instance.transcribe.assert_called_once_with(
+        "data/examples/sample_meeting.mp3", beam_size=5)

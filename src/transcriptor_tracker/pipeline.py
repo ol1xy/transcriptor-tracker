@@ -106,7 +106,6 @@ class PipelineEngine:
         published_path = self.tracker.publish(job_id, markdown_content)
 
         detected_skills = self._extract_skills(summary_model)
-        xapi_statement = self.self_event = self.tracker_url = published_path
 
         xapi_event = self.evidence_builder.build_published(
             issue_url=published_path,

@@ -87,7 +87,18 @@ class PipelineEngine:
         Analysis.
         Transcribes audio and returns SummaryModel.
         """
-        transcript_text = self.transcriber.transcribe(audio_path)
+        if not os.path.exists(audio_path):
+            raise FileNotFoundError(
+                f"Аудиофайл не найден по указанному пути: {audio_path}"
+            )
+
+        try:
+            transcript_text = self.transcriber.transcribe(audio_path)
+        except Exception as e:
+            raise RuntimeError(
+                f"Сбой при распознавании аудиозаписи: {e}"
+            )
+
         summary_model = self.summarizer.summarize(transcript_text)
         return summary_model
 

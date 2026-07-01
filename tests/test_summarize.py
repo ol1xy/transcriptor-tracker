@@ -82,7 +82,7 @@ def test_gemini_llm_adapter_parsing(mock_configure, mock_generative_model):
     adapter = GeminiLLMAdapter()
     summary = adapter.summarize(
         transcript="Привет, я куратор. Не используйте БД.",
-        project_context="Проект требует интеграции БД SQLite."
+        history="Проект требует интеграции БД SQLite."
     )
 
     assert isinstance(summary, SummaryModel)

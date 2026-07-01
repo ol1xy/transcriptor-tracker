@@ -7,6 +7,7 @@ from src.transcriptor_tracker.summarize import BaseLLMAdapter
 from src.transcriptor_tracker.publish import BaseTrackerAdapter
 from src.transcriptor_tracker.events import EvidenceBuilder
 from src.transcriptor_tracker.models import SummaryModel
+from src.transcriptor_tracker.knowledge_base import LocalKnowledgeBase
 
 
 class PipelineEngine:
@@ -19,12 +20,14 @@ class PipelineEngine:
             transcriber: BaseTranscriberAdapter,
             summarizer: BaseLLMAdapter,
             tracker: BaseTrackerAdapter,
-            evidence_builder: EvidenceBuilder):
+            evidence_builder: EvidenceBuilder,
+            knowledge_base: LocalKnowledgeBase):
 
         self.transcriber = transcriber
         self.summarizer = summarizer
         self.tracker = tracker
         self.evidence_builder = evidence_builder
+        self.knowledge_base = knowledge_base
 
     def _format_to_markdown(self, summary: SummaryModel) -> str:
         """
@@ -87,6 +90,8 @@ class PipelineEngine:
         Analysis.
         Transcribes audio and returns SummaryModel.
         """
+        history_text = self.knowledge_base.load_history()
+
         if not os.path.exists(audio_path):
             raise FileNotFoundError(
                 f"Аудиофайл не найден по указанному пути: {audio_path}"
@@ -99,7 +104,8 @@ class PipelineEngine:
                 f"Сбой при распознавании аудиозаписи: {e}"
             )
 
-        summary_model = self.summarizer.summarize(transcript_text)
+        summary_model = self.summarizer.summarize(
+            transcript_text, history_text)
         return summary_model
 
     def publish_summary(
@@ -148,8 +154,12 @@ class PipelineEngine:
         End-to-end automatic launch
         for tests and backward compatibility.
         """
+        history_text = self.knowledge_base.load_history()
+
         transcript_text = self.transcriber.transcribe(audio_path)
-        summary_model = self.summarizer.summarize(transcript_text)
+        summary_model = self.summarizer.summarize(
+            transcript_text, history_text
+            )
 
         pub_result = self.publish_summary(
             summary_model, job_id, actor_name, actor_email

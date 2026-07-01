@@ -4,3 +4,5 @@ pytest
 pytest-cov
 flake8
 faster_whisper
+google-generativeai
+python-dotenv

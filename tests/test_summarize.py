@@ -1,5 +1,10 @@
-from src.transcriptor_tracker.summarize import TemplateLLMAdapter
+from src.transcriptor_tracker.summarize import (
+    TemplateLLMAdapter, GeminiLLMAdapter
+)
 from src.transcriptor_tracker.models import SummaryModel
+from unittest.mock import patch, MagicMock
+import json
+import os
 
 
 def test_template_llm_adapter_parsing():
@@ -47,3 +52,49 @@ def test_template_llm_adapter_parsing():
     assert task_3.task == "Написать документацию проекта"
     assert task_3.assignee is None
     assert task_3.is_smart is True
+
+
+@patch.dict(os.environ, {"GEMINI_API_KEY": "fake_test_key_123"})
+@patch("src.transcriptor_tracker.summarize.genai.GenerativeModel")
+@patch("src.transcriptor_tracker.summarize.genai.configure")
+def test_gemini_llm_adapter_parsing(mock_configure, mock_generative_model):
+    fake_json_response = {
+        "context": "Консультация с куратором",
+        "decisions": ["Утвердить план"],
+        "open_questions": ["Как писать тесты?"],
+        "conflicts": ["В ТЗ указана БД, а куратор сказал делать без БД"],
+        "next_actions": [
+            {
+                "task": "Написать адаптер",
+                "assignee": "Robert",
+                "is_smart": True
+            }
+        ]
+    }
+
+    mock_model_instance = MagicMock()
+    mock_generative_model.return_value = mock_model_instance
+
+    mock_response = MagicMock()
+    mock_response.text = json.dumps(fake_json_response)
+    mock_model_instance.generate_content.return_value = mock_response
+
+    adapter = GeminiLLMAdapter()
+    summary = adapter.summarize(
+        transcript="Привет, я куратор. Не используйте БД.",
+        history="Проект требует интеграции БД SQLite."
+    )
+
+    assert isinstance(summary, SummaryModel)
+    assert summary.context == "Консультация с куратором"
+    assert (
+        "В ТЗ указана БД, а куратор сказал делать без БД"
+        in summary.conflicts
+    )
+    assert summary.next_actions[0].task == "Написать адаптер"
+
+    mock_model_instance.generate_content.assert_called_once()
+    call_kwargs = mock_model_instance.generate_content.call_args.kwargs
+    assert call_kwargs["generation_config"]["response_mime_type"] == (
+        "application/json"
+    )

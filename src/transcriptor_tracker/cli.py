@@ -1,10 +1,11 @@
 import typer
 from src.transcriptor_tracker.transcribe import WhisperLocalAdapter
-from src.transcriptor_tracker.summarize import TemplateLLMAdapter
 from src.transcriptor_tracker.publish import MockTrackerAdapter
 from src.transcriptor_tracker.events import EvidenceBuilder
 from src.transcriptor_tracker.pipeline import PipelineEngine
 from src.transcriptor_tracker.knowledge_base import LocalKnowledgeBase
+from src.transcriptor_tracker.summarize import GeminiLLMAdapter
+from dotenv import load_dotenv
 
 
 app = typer.Typer(
@@ -37,10 +38,12 @@ def process(
     """
     typer.echo("Запуск Transcriptor-Tracker Pipeline...")
 
+    load_dotenv()
+
     # 1. Собираем двигатель из реальных адаптеров
     engine = PipelineEngine(
         transcriber=WhisperLocalAdapter(),
-        summarizer=TemplateLLMAdapter(),
+        summarizer=GeminiLLMAdapter(),
         tracker=MockTrackerAdapter(),
         evidence_builder=EvidenceBuilder(),
         knowledge_base=LocalKnowledgeBase()

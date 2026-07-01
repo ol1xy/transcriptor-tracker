@@ -1,6 +1,9 @@
 import re
 from abc import ABC, abstractmethod
 from src.transcriptor_tracker.models import SummaryModel, ActionItem
+import google.generativeai as genai
+from src.transcriptor_tracker.prompts import CONTRADICTION_PROMPT_TEMPLATE
+import os
 
 
 class BaseLLMAdapter(ABC):
@@ -10,7 +13,9 @@ class BaseLLMAdapter(ABC):
     SummaryModel as output.
     """
     @abstractmethod
-    def summarize(self, transcript: str, history: str = "") -> SummaryModel:
+    def summarize(
+        self, transcript: str, project_context: str = ""
+    ) -> SummaryModel:
         pass
 
 
@@ -48,7 +53,6 @@ class TemplateLLMAdapter(BaseLLMAdapter):
 
             elif line.startswith("Задача:"):
                 task_text = line.replace("Задача:", "").strip()
-
                 assignee = None
                 assignee_match = re.search(r"@(\S+)", task_text)
 
@@ -76,3 +80,37 @@ class TemplateLLMAdapter(BaseLLMAdapter):
             conflicts=conflicts,
             next_actions=next_actions
         )
+
+
+class GeminiLLMAdapter(BaseLLMAdapter):
+    """
+    Адаптер для работы с API Google Gemini.
+    Гарантирует возврат валидного JSON под Pydantic-модель.
+    """
+    def __init__(self, model_name: str = "gemini-3.5-flash"):
+        api_key = os.environ.get("GEMINI_API_KEY")
+        if not api_key:
+            raise ValueError("В переменных окружения не найден GEMINI_API_KEY")
+
+        genai.configure(api_key=api_key)
+        self.model = genai.GenerativeModel(model_name)
+
+    def summarize(
+            self, transcript: str, history: str = ""
+    ) -> SummaryModel:
+        prompt = CONTRADICTION_PROMPT_TEMPLATE.format(
+            project_history=history,
+            meeting_transcript=transcript
+        )
+
+        response = self.model.generate_content(
+            prompt,
+            generation_config={"response_mime_type": "application/json"}
+        )
+
+        try:
+            return SummaryModel.model_validate_json(response.text)
+        except Exception as e:
+            raise RuntimeError(
+                f"Ошибка парсинга ответа Gemini: {e}\nТекст: {response.text}"
+            )

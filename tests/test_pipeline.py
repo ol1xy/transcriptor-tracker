@@ -23,14 +23,16 @@ def test_pipeline_engine_full_run(tmp_path):
     tracker = MockTrackerAdapter(base_dir=test_base_dir)
 
     evidence_builder = EvidenceBuilder()
-    knowledge_base = LocalKnowledgeBase()
+
+    mock_kb = MagicMock()
+    mock_kb.load_history.return_value = "Базовая история проекта ТЗ"
 
     engine = PipelineEngine(
         transcriber=mock_transcriber,
         summarizer=summarizer,
         tracker=tracker,
         evidence_builder=evidence_builder,
-        knowledge_base=knowledge_base
+        knowledge_base=mock_kb
     )
 
     result = engine.run(
@@ -62,14 +64,16 @@ def test_pipeline_engine_step_by_step(tmp_path):
     tracker = MockTrackerAdapter(base_dir=test_base_dir)
 
     evidence_builder = EvidenceBuilder()
-    knowledge_base = LocalKnowledgeBase()
+
+    mock_kb = MagicMock()
+    mock_kb.load_history.return_value = "Базовая история проекта ТЗ"
 
     engine = PipelineEngine(
         transcriber=mock_transcriber,
         summarizer=summarizer,
         tracker=tracker,
         evidence_builder=evidence_builder,
-        knowledge_base=knowledge_base
+        knowledge_base=mock_kb
     )
 
     summary = engine.analyze_audio("data/examples/sample-meeting.mp3")
@@ -94,12 +98,15 @@ def test_pipeline_engine_step_by_step(tmp_path):
 
 def test_pipeline_engine_file_not_found(tmp_path):
 
+    mock_kb = MagicMock()
+    mock_kb.load_history.return_value = "Базовая история проекта ТЗ"
+
     engine = PipelineEngine(
         transcriber=MagicMock(),
         summarizer=MagicMock(),
         tracker=MagicMock(),
         evidence_builder=MagicMock(),
-        knowledge_base=LocalKnowledgeBase()
+        knowledge_base=mock_kb
     )
 
     with pytest.raises(FileNotFoundError) as exc_info:

@@ -16,8 +16,7 @@ class LocalKnowledgeBase:
         Reads the project history file.
         Throws an error if the file is missing.
         """
-        if not os.path.exists(self.base_dir if hasattr(self, 'base_dir')
-                              else self.history_path):
+        if not os.path.exists(self.history_path):
             raise FileNotFoundError(
                 f"История проекта не найдена по пути: {self.history_path}"
             )

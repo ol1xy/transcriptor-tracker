@@ -10,7 +10,7 @@ class BaseLLMAdapter(ABC):
     SummaryModel as output.
     """
     @abstractmethod
-    def summarize(self, transcript: str) -> SummaryModel:
+    def summarize(self, transcript: str, history: str = "") -> SummaryModel:
         pass
 
 
@@ -19,7 +19,7 @@ class TemplateLLMAdapter(BaseLLMAdapter):
     Template-based parser adapter. Searhes the text for marker keywords and
     converts them into strictly validated Pydantic model.
     """
-    def summarize(self, transcript: str) -> SummaryModel:
+    def summarize(self, transcript: str, history: str = "") -> SummaryModel:
 
         context = "Контекст встречи не определен"
         decisions = []

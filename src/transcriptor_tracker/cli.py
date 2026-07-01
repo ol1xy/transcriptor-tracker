@@ -4,6 +4,8 @@ from src.transcriptor_tracker.summarize import TemplateLLMAdapter
 from src.transcriptor_tracker.publish import MockTrackerAdapter
 from src.transcriptor_tracker.events import EvidenceBuilder
 from src.transcriptor_tracker.pipeline import PipelineEngine
+from src.transcriptor_tracker.knowledge_base import LocalKnowledgeBase
+
 
 app = typer.Typer(
     help="Инструмент для создания xAPI артефактов из аудиовстреч."
@@ -40,7 +42,8 @@ def process(
         transcriber=WhisperLocalAdapter(),
         summarizer=TemplateLLMAdapter(),
         tracker=MockTrackerAdapter(),
-        evidence_builder=EvidenceBuilder()
+        evidence_builder=EvidenceBuilder(),
+        knowledge_base=LocalKnowledgeBase()
     )
 
     typer.echo(f"Распознавание и анализ аудио: {audio_path}")

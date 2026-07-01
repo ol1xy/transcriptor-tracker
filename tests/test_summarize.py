@@ -87,8 +87,10 @@ def test_gemini_llm_adapter_parsing(mock_configure, mock_generative_model):
 
     assert isinstance(summary, SummaryModel)
     assert summary.context == "Консультация с куратором"
-    assert "В ТЗ указана БД, "
-    "а куратор сказал делать без БД" in summary.conflicts
+    assert (
+        "В ТЗ указана БД, а куратор сказал делать без БД"
+        in summary.conflicts
+    )
     assert summary.next_actions[0].task == "Написать адаптер"
 
     mock_model_instance.generate_content.assert_called_once()

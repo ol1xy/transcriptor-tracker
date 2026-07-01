@@ -5,6 +5,7 @@ from src.transcriptor_tracker.summarize import TemplateLLMAdapter
 from src.transcriptor_tracker.publish import MockTrackerAdapter
 from src.transcriptor_tracker.events import EvidenceBuilder
 from src.transcriptor_tracker.models import SummaryModel
+from src.transcriptor_tracker.knowledge_base import LocalKnowledgeBase
 import pytest
 
 
@@ -22,12 +23,14 @@ def test_pipeline_engine_full_run(tmp_path):
     tracker = MockTrackerAdapter(base_dir=test_base_dir)
 
     evidence_builder = EvidenceBuilder()
+    knowledge_base = LocalKnowledgeBase()
 
     engine = PipelineEngine(
         transcriber=mock_transcriber,
         summarizer=summarizer,
         tracker=tracker,
-        evidence_builder=evidence_builder
+        evidence_builder=evidence_builder,
+        knowledge_base=knowledge_base
     )
 
     result = engine.run(
@@ -59,12 +62,14 @@ def test_pipeline_engine_step_by_step(tmp_path):
     tracker = MockTrackerAdapter(base_dir=test_base_dir)
 
     evidence_builder = EvidenceBuilder()
+    knowledge_base = LocalKnowledgeBase()
 
     engine = PipelineEngine(
         transcriber=mock_transcriber,
         summarizer=summarizer,
         tracker=tracker,
-        evidence_builder=evidence_builder
+        evidence_builder=evidence_builder,
+        knowledge_base=knowledge_base
     )
 
     summary = engine.analyze_audio("data/examples/sample-meeting.mp3")
@@ -93,7 +98,8 @@ def test_pipeline_engine_file_not_found(tmp_path):
         transcriber=MagicMock(),
         summarizer=MagicMock(),
         tracker=MagicMock(),
-        evidence_builder=MagicMock()
+        evidence_builder=MagicMock(),
+        knowledge_base=LocalKnowledgeBase()
     )
 
     with pytest.raises(FileNotFoundError) as exc_info:

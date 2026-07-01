@@ -2,6 +2,7 @@ import re
 from abc import ABC, abstractmethod
 from src.transcriptor_tracker.models import SummaryModel, ActionItem
 import google.generativeai as genai
+from src.transcriptor_tracker.prompts import CONTRADICTION_PROMPT_TEMPLATE
 import os
 
 
@@ -23,9 +24,7 @@ class TemplateLLMAdapter(BaseLLMAdapter):
     Template-based parser adapter. Searhes the text for marker keywords and
     converts them into strictly validated Pydantic model.
     """
-    def summarize(
-            self, transcript: str, project_context: str = ""
-    ) -> SummaryModel:
+    def summarize(self, transcript: str, history: str = "") -> SummaryModel:
 
         context = "Контекст встречи не определен"
         decisions = []
@@ -88,7 +87,7 @@ class GeminiLLMAdapter(BaseLLMAdapter):
     Адаптер для работы с API Google Gemini.
     Гарантирует возврат валидного JSON под Pydantic-модель.
     """
-    def __init__(self, model_name: str = "gemini-1.5-flash"):
+    def __init__(self, model_name: str = "gemini-3.5-flash"):
         api_key = os.environ.get("GEMINI_API_KEY")
         if not api_key:
             raise ValueError("В переменных окружения не найден GEMINI_API_KEY")
@@ -97,37 +96,12 @@ class GeminiLLMAdapter(BaseLLMAdapter):
         self.model = genai.GenerativeModel(model_name)
 
     def summarize(
-            self, transcript: str, project_context: str = ""
+            self, transcript: str, history: str = ""
     ) -> SummaryModel:
-        prompt = f"""
-        Ты — строгий проектный бизнес-аналитик. Твоя задача — проанализировать
-        транскрипт встречи, сравнить его с историей (базой знаний) проекта и
-        найти логические противоречия.
-
-        ИСТОРИЯ ПРОЕКТА (Требования):
-        {project_context}
-
-        ТРАНСКРИПТ ВСТРЕЧИ (Устное обсуждение):
-        {transcript}
-
-        ИНСТРУКЦИЯ:
-        Выведи результат СТРОГО в формате валидного JSON
-        (без форматирования markdown).
-        Структура JSON должна быть такой:
-        {{
-            "context": "Краткое описание того, что обсуждалось",
-            "decisions": ["Список принятых решений"],
-            "open_questions": ["Список вопросов"],
-            "conflicts": [
-                "Список противоречий между ТРАНСКРИПТОМ и ИСТОРИЕЙ ПРОЕКТА"
-            ],
-            "next_actions": [
-                {{"task": "текст задачи",
-                "assignee": "имя или null",
-                "is_smart": true/false}}
-            ]
-        }}
-        """
+        prompt = CONTRADICTION_PROMPT_TEMPLATE.format(
+            project_history=history,
+            meeting_transcript=transcript
+        )
 
         response = self.model.generate_content(
             prompt,

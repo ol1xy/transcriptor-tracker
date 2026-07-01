@@ -24,3 +24,4 @@ class LocalKnowledgeBase:
         
         with open(self.history_path, "r", encoding="utf-8") as f:
             return f.read().strip()
+        

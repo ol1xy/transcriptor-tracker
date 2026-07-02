@@ -11,9 +11,8 @@ $(VENV)/bin/activate:
 	@if [ ! -f .env ]; then \
 		cp .env.example .env; \
 		echo "Файл .env успешно создан из шаблона!"; \
-		echo "ВНИМАНИЕ: Откройте файл .env и впишите ваш реальный GEMINI_API_KEY перед запуском."; \
-	else \
-		echo "Файл .env уже существует."; \
+		echo "⚠️  ВНИМАНИЕ: Откройте созданный файл .env, впишите ваш GEMINI_API_KEY и запустите команду снова."; \
+		exit 1; \
 	fi
 
 install: $(VENV)/bin/activate

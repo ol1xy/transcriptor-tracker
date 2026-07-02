@@ -1,4 +1,4 @@
-.PHONY: install test lint coverage shell
+.PHONY: install test lint coverage shell docker-build docker-up docker-down docker-test
 
 VENV = venv
 PYTHON = $(VENV)/bin/python
@@ -22,3 +22,25 @@ coverage:
 shell: $(VENV)/bin/activate
 	@echo "entering venv, type exit to quit"
 	@PATH=$(shell pwd)/$(VENV)/bin:$$PATH bash
+
+DOCKER_AUDIO ?= data/examples/sample-meeting.mp3
+DOCKER_PROJECT_ID ?= edu
+DOCKER_ISSUE_ID ?= 101
+
+docker-build:
+	docker compose build
+
+docker-up:
+	docker compose run --rm tracker $(DOCKER_AUDIO) --project-id "$(DOCKER_PROJECT_ID)" --issue-id "$(DOCKER_ISSUE_ID)"
+
+docker-down:
+	docker compose down -v
+
+docker-test:
+	docker compose run --rm -e PYTHONPATH=/app --entrypoint "pytest tests/" tracker
+
+docker-lint:
+	docker compose run --rm --entrypoint "flake8 src/ tests/" tracker
+
+docker-coverage:
+	docker compose run --rm -e PYTHONPATH=/app --entrypoint "pytest --cov=src/transcriptor_tracker tests/" tracker

@@ -1,4 +1,4 @@
-.PHONY: install test lint coverage shell docker-build docker-up docker-down docker-test
+.PHONY: install test lint coverage shell docker-build docker-up docker-down docker-test .env demo
 
 VENV = venv
 PYTHON = $(VENV)/bin/python
@@ -52,3 +52,11 @@ docker-lint:
 
 docker-coverage:
 	docker compose run --rm -e PYTHONPATH=/app --entrypoint "pytest --cov=src/transcriptor_tracker tests/" tracker
+
+demo: install .env
+	@echo "Запуск сквозного демонстрационного пайплайна..."
+	$(PYTHON) -m src.transcriptor_tracker.cli data/examples/consultation_demo.mp3 \
+		--project-id "edu" \
+		--issue-id "consultation" \
+		--actor-name "Robert" \
+		--actor-email "robert@edu.ru"

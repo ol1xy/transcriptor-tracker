@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  tracker:
+    build: .
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+      - whisper_models:/app/models_cache
+    stdin_open: true
+    tty: true
+
+volumes:
+  whisper_models:

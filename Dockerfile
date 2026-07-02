@@ -14,8 +14,11 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY src/ ./src
+COPY tests/ ./tests
 
-RUN useradd -m appuser && chown -R appuser:appuser /app
+RUN useradd -m appuser \
+    && mkdir -p /app/models_cache \
+    && chown -R appuser:appuser /app
 USER appuser
 
 ENTRYPOINT ["python", "-m", "src.transcriptor_tracker.cli"]
